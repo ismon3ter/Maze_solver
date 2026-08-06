@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "customtkinter>=6.0.0",
     "numpy>=2.5.1",
     "opencv-python>=5.0.0.93",
+    "pillow>=12.3.0",
+    "pyinstaller>=6.21.0",
 ]

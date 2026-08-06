@@ -2,13 +2,14 @@ import cv2
 import numpy as np
 import random
 import sys
+import time
 
 sys.setrecursionlimit(10000)
 
 # ==========================================
 # 1. DFS 
 # ==========================================
-def generate_dfs(width, height, show_animation=False):
+def generate_dfs(width, height, show_animation=False, callback=None):
     shape = (height * 2 + 1, width * 2 + 1)
     maze = np.zeros(shape, dtype=np.uint8)
     scale = 10
@@ -16,7 +17,8 @@ def generate_dfs(width, height, show_animation=False):
     def dfs_generate_from(cx, cy):
         maze[cy * 2 + 1, cx * 2 + 1] = 255
         
-        if show_animation:
+        if callback: callback(maze.copy()); time.sleep(0.01)
+        elif show_animation:
             display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
             cv2.imshow("Generating DFS...", display_img)
             cv2.waitKey(10) 
@@ -28,22 +30,26 @@ def generate_dfs(width, height, show_animation=False):
             nx, ny = cx + dx, cy + dy
             if 0 <= nx < width and 0 <= ny < height and maze[ny * 2 + 1, nx * 2 + 1] == 0:
                 maze[cy * 2 + 1 + dy, cx * 2 + 1 + dx] = 255
-                if show_animation:
+                
+                if callback: callback(maze.copy()); time.sleep(0.01)
+                elif show_animation:
                     display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
                     cv2.imshow("Generating DFS...", display_img)
                     cv2.waitKey(10)
+                    
                 dfs_generate_from(nx, ny)
 
     dfs_generate_from(0, 0)
     maze[1, 0] = 255
     maze[-2, -1] = 255
-    if show_animation: cv2.destroyWindow("Generating DFS...")
+    if callback: callback(maze.copy())
+    if show_animation and not callback: cv2.destroyWindow("Generating DFS...")
     return maze
 
 # ==========================================
 # 2. Prim 
 # ==========================================
-def generate_prim(width, height, show_animation=False):
+def generate_prim(width, height, show_animation=False, callback=None):
     shape = (height * 2 + 1, width * 2 + 1)
     maze = np.zeros(shape, dtype=np.uint8)
     scale = 10
@@ -57,7 +63,7 @@ def generate_prim(width, height, show_animation=False):
                 walls.append((cx * 2 + 1 + dx, cy * 2 + 1 + dy, nx, ny))
                 
     add_walls(0, 0)
-    
+    step = 0
     while len(walls) > 0:
         idx = random.randint(0, len(walls) - 1)
         wx, wy, nx, ny = walls.pop(idx)
@@ -66,21 +72,23 @@ def generate_prim(width, height, show_animation=False):
             maze[wy, wx] = 255 
             add_walls(nx, ny)  
             
-            # Prim 扩散速度很快，所以每打通一堵墙就展示一下
-            if show_animation:
+            step += 1
+            if callback and step % 3 == 0: callback(maze.copy()); time.sleep(0.005)
+            elif show_animation and step % 3 == 0:
                 display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
                 cv2.imshow("Generating Prim...", display_img)
                 cv2.waitKey(5)
                 
     maze[1, 0] = 255
     maze[-2, -1] = 255
-    if show_animation: cv2.destroyWindow("Generating Prim...")
+    if callback: callback(maze.copy())
+    if show_animation and not callback: cv2.destroyWindow("Generating Prim...")
     return maze
 
 # ==========================================
 # 3. 递归分割 
 # ==========================================
-def generate_division(width, height, show_animation=False):
+def generate_division(width, height, show_animation=False, callback=None):
     shape = (height * 2 + 1, width * 2 + 1)
     maze = np.ones(shape, dtype=np.uint8) * 255
     maze[0, :] = 0; maze[-1, :] = 0; maze[:, 0] = 0; maze[:, -1] = 0
@@ -97,10 +105,11 @@ def generate_division(width, height, show_animation=False):
             maze[wall_y, (x * 2 + 1):(x * 2 + 1 + w * 2)] = 0
             maze[wall_y, x * 2 + 1 + dx * 2] = 255
             
-            if show_animation:
+            if callback: callback(maze.copy()); time.sleep(0.02)
+            elif show_animation:
                 display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
                 cv2.imshow("Generating Division...", display_img)
-                cv2.waitKey(20) # 建墙比较慢，多停顿一下看清楚
+                cv2.waitKey(20) 
                 
             divide(x, y, w, wy)
             divide(x, y + wy, w, h - wy)
@@ -111,7 +120,8 @@ def generate_division(width, height, show_animation=False):
             maze[(y * 2 + 1):(y * 2 + 1 + h * 2), wall_x] = 0
             maze[y * 2 + 1 + dy * 2, wall_x] = 255
             
-            if show_animation:
+            if callback: callback(maze.copy()); time.sleep(0.02)
+            elif show_animation:
                 display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
                 cv2.imshow("Generating Division...", display_img)
                 cv2.waitKey(20)
@@ -122,13 +132,14 @@ def generate_division(width, height, show_animation=False):
     divide(0, 0, width, height)
     maze[1, 0] = 255
     maze[-2, -1] = 255
-    if show_animation: cv2.destroyWindow("Generating Division...")
+    if callback: callback(maze.copy())
+    if show_animation and not callback: cv2.destroyWindow("Generating Division...")
     return maze
 
 # ==========================================
 # 4. Kruskal 
 # ==========================================
-def generate_kruskal(width, height, show_animation=False):
+def generate_kruskal(width, height, show_animation=False, callback=None):
     shape = (height * 2 + 1, width * 2 + 1)
     maze = np.zeros(shape, dtype=np.uint8)
     scale = 10
@@ -163,7 +174,6 @@ def generate_kruskal(width, height, show_animation=False):
                 walls.append({"wall_pos": (y * 2 + 2, x * 2 + 1), "room1": current_room_id, "room2": current_room_id + width})
                 
     random.shuffle(walls)
-    
     step = 0
     for wall in walls:
         if union(wall["room1"], wall["room2"]):
@@ -171,21 +181,24 @@ def generate_kruskal(width, height, show_animation=False):
             maze[wy, wx] = 255 
             
             step += 1
-            # 因为墙很多，每砸 5 堵墙才刷新一次画面，不然太慢了
-            if show_animation and step % 5 == 0:
+            if callback and step % 5 == 0: callback(maze.copy()); time.sleep(0.001)
+            elif show_animation and step % 5 == 0:
                 display_img = cv2.resize(maze, (shape[1] * scale, shape[0] * scale), interpolation=cv2.INTER_NEAREST)
                 cv2.imshow("Generating Kruskal...", display_img)
                 cv2.waitKey(1)
             
     maze[1, 0] = 255
     maze[-2, -1] = 255
-    if show_animation: cv2.destroyWindow("Generating Kruskal...")
+    if callback: callback(maze.copy())
+    if show_animation and not callback: cv2.destroyWindow("Generating Kruskal...")
     return maze
 
+# ==========================================
+# 测试模块 (单独运行此文件时执行)
+# ==========================================
 if __name__ == "__main__":
     w, h = 20, 20
     
-    # 依次播放四个算法的生成动画！
     print("1. 正在演示 DFS 生成...")
     maze_imgdfs = generate_dfs(w, h, show_animation=True)
 
@@ -198,7 +211,6 @@ if __name__ == "__main__":
     print("4. 正在演示 Kruskal 生成...")
     maze_imgkruskal = generate_kruskal(w, h, show_animation=True)
 
-    # 显示放大版（用于人眼观察对比）
     scale = 10
     maze_img_largedfs = cv2.resize(maze_imgdfs, (0,0), fx=scale, fy=scale, interpolation=cv2.INTER_NEAREST)
     maze_img_largeprim = cv2.resize(maze_imgprim, (0,0), fx=scale, fy=scale, interpolation=cv2.INTER_NEAREST)
@@ -210,7 +222,6 @@ if __name__ == "__main__":
     cv2.imshow("Final: DIVISION", maze_img_largedivison)
     cv2.imshow("Final: KRUSKAL", maze_img_largekruskal)
 
-    # 【重要修复】保存必须保存原汁原味的小图片，不能存大的！
     cv2.imwrite("mazedfs.png", maze_imgdfs)
     cv2.imwrite("mazeprim.png", maze_imgprim)
     cv2.imwrite("mazedivison.png", maze_imgdivison)

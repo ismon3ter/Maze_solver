@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-# 【关键】导入我们的核心寻路引擎！
+# 导入我们的寻路模块
 import solve 
 
 points = []
@@ -27,7 +27,7 @@ def click_event(event, x, y, flags, param):
             cv2.putText(display_img, text, (p[0]+10, p[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         cv2.imshow("External Maze Preprocessor", display_img)
 
-# 【关键接口】增加了一个 algo 参数，供我们在外部随便换算法
+# 增加了一个 algo 参数，供我们在外部随便换算法
 def solve_external_maze(image_path, algo="ASTAR"):
     global points, display_img, clean_img, thresh_img
     
@@ -86,13 +86,11 @@ def solve_external_maze(image_path, algo="ASTAR"):
         
     start, end = points[0], points[1]
     
-    # 我们不再自己计算了，直接关闭预处理窗口
+    # 关闭预处理窗口
     cv2.destroyAllWindows()
     print(f"\n🚀 正在调用底层 solve.py 引擎使用 {algo} 算法求解，请看新弹出的窗口...")
     
-    # ========================================================
-    # ⭐️ 核心调用：直接把处理好的矩阵和鼠标点，喂给通用引擎！
-    # ========================================================
+    # 核心调用
     solve.solve_maze_algo(
         maze_input=thresh_img, 
         algo=algo, 
@@ -103,5 +101,5 @@ def solve_external_maze(image_path, algo="ASTAR"):
 
 
 if __name__ == "__main__":
-    # 你可以在这里随意切换算法了！(例如换成 "BFS", "DFS", "ASTAR")
-    solve_external_maze("test1.png", algo="BFS")
+    # 切换算法(例如 "BFS", "DFS", "ASTAR")
+    solve_external_maze("extest.png", algo="BFS")

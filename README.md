@@ -1,80 +1,90 @@
-# 基于 OpenCV 的迷宫自动生成与求解 (Maze-Solver)
-这是一个计算机视觉与算法项目，基于 OpenCV 库的迷宫自动生成与求解。它不仅能让电脑自己“挖”出一个没有任何死循环的完美迷宫，还能像水流一样自动找到最短的逃生路线,同时支持外部图片识别与破解，异形迷宫求解和用户交互式操作。
-## 系统核心功能设计
-本项目计划完成的maze_solver系统功能包括：
-### 1.迷宫自动生成 (带动画)
-使用 DFS 算法生成“完美迷宫”（任意两点间只有唯一路径）。支持动画开关。
-### 2.迷宫求解 (带动画)
-使用 BFS 算法或 其他算法 破解迷宫。模拟“水流蔓延”的视觉效果。
-### 3.外部图片支持 (交互式破解)
-利用 OpenCV 的图像二值化技术，支持读入任意外部迷宫图片。你可以用鼠标自由指定起点和终点，程序会为你破解它。
-### 4.异形迷宫求解
-对于非网格迷宫，（例如圆形，存在斜线的迷宫等），程序也能正确求解最短路径。
-### 5.交互式操作
-用户可以通过交互式页面来生成和破解迷宫。
+# 🌟 MazeSolver: 智能迷宫生成与求解系统
 
-## 环境配置
-本项目使用现代化的 Python 包管理工具 uv 构建，并使用git进行版本控制。
-    1.确保电脑已安装 Python 及 uv 工具。
-    uv安装请根据官方文档进行。
-    https://uv.doczh.com/getting-started/installation/
-    2.在终端运行以下命令安装依赖：
-    新建项目文件夹并初始化
-    ```
-    uv init maze-solver
-    cd maze-solver
-    ```
-    安装项目依赖
-    ```
-    uv add opencv-python numpy
-    ```
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=for-the-badge&logo=opencv)
+![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-blueviolet?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
 
-## 项目运行
-    在终端运行以下命令启动项目：
-    ```
-    uv run main.py
-    ```
+本项目是一个集**算法可视化、计算机视觉处理、现代 GUI 交互**于一体的桌面应用程序。系统内置了多种经典的图论算法用于迷宫的自动生成与最优路径求解，同时具备强大的高鲁棒性 CV 引擎，能够读取、修复并破解含有噪点的真实世界迷宫图片。
 
-    如有其他独立需求，可单独运行相关模块。
-    例如：
-    ```
-    uv run generator.py
-    ```
-    效果：屏幕上会弹出迷宫生成的动画。生成完毕后，会在项目目录下自动保存一张 maze.png。
-    ```
-    uv run solver.py
-    ```
-    效果：屏幕上会弹出迷宫求解的动画。
-    ```
-    uv run external.py
-    ```
-    效果：屏幕上会弹出外部图片识别与破解的动画。
+## 📸 效果展示 (Demo)
 
+| 迷宫生成动画 (Kruskal) | 智能寻路动画 (A-Star) |
+| :---: | :---: |
+| <img src="assets\Kruskal_generation.gif" alt="Generation" width="100%"> | <img src="assets\Astar_solvingKruskal.gif" alt="Solving" width="100%"> |
+| *展示如繁星般打通墙壁的并查集算法* | *展示 A* 雷达制导躲避死胡同的寻路过程* |
 
-## 核心算法解析
-### 1.迷宫自动生成 (DFS)
-    使用深度优先搜索 (DFS) 算法生成“完美迷宫”（任意两点间只有唯一路径）。支持动画开关。
-    1.1 算法流程：
-        1.1.1 从随机起点开始，随机选择一个未访问的邻居，将其标记为已访问。
-        1.1.2 递归调用 DFS 函数，将该邻居作为新的起点。
-        1.1.3 重复以上步骤，直到所有单元格都被访问过。
-### 2.迷宫求解 (BFS)
-    使用广度优先搜索 (BFS) 算法求迷宫最短路径。模拟“水流蔓延”的视觉效果。
-    2.1 算法流程：
-        2.1.1 从起点开始，将它加入队列并标记为已访问。
-        2.1.2 从队列中取出一个单元格，将其标记为已访问。
-        2.1.3 遍历该单元格的所有邻居，如果邻居未访问过，将其加入队列并标记为已访问。
-        2.1.4 重复以上步骤，直到队列为空或找到终点。
-### 3.外部图片识别与破解
+| 外部脏图片智能解析 | 现代化暗黑 UI 界面 |
+| :---: | :---: |
+| <img src="assets\external.png" alt="external" width="100%"> | <img src="assets\GUI.png"  alt="GUI" width="100%"> |
+| *自动裁边、腐蚀加固墙壁并完成鼠标交互选点* | *基于 MVC 架构与多线程无阻塞渲染* |
 
-    利用 OpenCV 的图像二值化技术，支持读入任意外部迷宫图片。你可以用鼠标自由指定起点和终点，程序会为你破解它。
-    3.1 算法流程：
-        3.1.1 读取外部图片，将其转换为二值化图像。
-        3.1.2 从二值化图像中提取所有连通区域。
-        3.1.3 遍历所有连通区域，判断是否为迷宫的起点或终点。
-        3.1.4 如果是起点或终点，将其标记为已访问。
-        3.1.5 重复以上步骤，直到所有连通区域都被访问过。
-        3.1.6 如果所有连通区域都被访问过，说明迷宫已破解。
+## ✨ 核心特性 (Features)
 
+*   **🏰 四大迷宫生成算法**：
+    *   `DFS (深度优先)`：生成深邃的长主干道迷宫。
+    *   `Prim (随机普里姆)`：生成具有大量极短岔路的辐射状迷宫。
+    *   `Recursive Division (递归分割)`：利用空间降维生成具有笔直长廊的街区型迷宫。
+    *   `Kruskal (克鲁斯卡尔)`：基于并查集 (Union-Find) 生成纹理绝对随机、平衡的迷宫。
+*   **🚀 三大智能寻路引擎**：
+    *   `BFS (广度优先)`：基于队列实现，寻找绝对最短路径的泛洪搜索。
+    *   `DFS (深度优先)`：基于栈实现，展示回溯特性的盲目探索。
+    *   `A* (A-Star)`：引入曼哈顿距离启发函数，极大减少无用探索，直扑终点。
+*   **🖼️ 计算机视觉 (CV) 智能预处理**：
+    *   支持任意外部迷宫图片的导入。底层集成 `OpenCV`，通过**二值化阈值切割、形态学腐蚀 (Erosion)、最小包围矩形 (Bounding Rect) 遮罩裁边**等硬核 CV 操作，完美修复网络图片的 JPEG 伪影与破洞，杜绝“穿模漏水”及“外围绕界”现象。
+*   **🎮 多线程 UI 与玩家挑战模式**：
+    *   采用 `CustomTkinter` 打造极简暗黑风界面。
+    *   底层采用 `Threading` 后台子线程结合 `Callback` 回调刷新图像，彻底解决算法计算时的界面假死问题。
+    *   支持用户使用键盘 `WASD` 亲自挑战生成的迷宫。
 
-# 开发者：ismon3ter
+## 🛠️ 安装与运行 (Installation)
+
+本项目推荐使用现代化的 Python 包管理工具 `uv` 进行零配置极速部署：
+
+**1. 克隆项目到本地**
+```bash
+git clone https://github.com/yourusername/maze-solver.git
+cd maze-solver
+```
+
+**2. 安装依赖包**
+```bash
+# 如果使用 uv (推荐)
+uv add opencv-python numpy customtkinter pillow
+
+# 如果使用传统的 pip
+pip install opencv-python numpy customtkinter pillow
+```
+
+**3. 启动应用**
+```bash
+uv run desktop_app.py
+# 或 python desktop_app.py
+```
+
+## 📁 项目架构 (Project Structure)
+
+项目遵循高内聚、低耦合的 **MVC (Model-View-Controller)** 架构：
+
+```text
+📦 maze-solver
+ ┣ 📜 desktop_app.py    # GUI 客户端入口 (View & Controller)，处理线程与交互
+ ┣ 📜 generate.py       # 迷宫生成引擎 (Model)，独立算法库
+ ┣ 📜 solve.py          # 迷宫寻路与 CV 处理引擎 (Model)，独立算法库
+ ┣ 📜 test1.png         # 用于测试的外部迷宫图片样本
+ ┗ 📜 README.md         # 项目说明文档
+```
+
+## 🧠 技术原理解析
+
+### 外部图片的“洗眼”流水线 (CV Pipeline)
+针对外部导入的低质量迷宫图像，本项目设计了极具鲁棒性的预处理方案：
+1. **自适应缩放**：微型原生矩阵采用 `INTER_NEAREST` 无损插值放大；超大型网图等比例缩小防止显存溢出。
+2. **特征降维**：转化为灰度图后，应用 $T=200$ 的严格硬阈值进行 `cv2.threshold` 二值化处理。
+3. **形态学加固**：使用 $3 \times 3$ 全1核进行局部最小值卷积（`cv2.erode` 腐蚀），物理填补 1 像素宽的墙壁破洞。
+4. **智能遮罩**：利用 `cv2.findNonZero` 提取墙体极值点，构建 BBox，通过位运算 (`cv2.bitwise_and`) 清除迷宫外的留白高速公路。
+
+---
+
+**👨‍💻 Author:** [ is_mon3ter ]  
+**📅 Date:** 2026.09

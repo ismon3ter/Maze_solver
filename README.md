@@ -11,10 +11,10 @@
 
 | 迷宫生成动画 (Kruskal) | 智能寻路动画 (A-Star) |
 | :---: | :---: |
-| <img src="assets\Kruskal_generation.gif" alt="Generation" width="100%"> | <img src="assets\Astar_solvingKruskal.gif" alt="Solving" width="100%"> |
-| *展示如繁星般打通墙壁的并查集算法* | *展示 A* 雷达制导躲避死胡同的寻路过程* |
+| <img src="assets\Kruskal_generation.gif" alt="Generation" width="100%"> | <img src="assets\solving.gif" alt="Solving" width="100%"> |
+| *Kruskal(克鲁斯卡尔)算法生成迷宫* | *A* (A-Star) 智能寻路算法* |
 
-| 外部脏图片智能解析 | 现代化暗黑 UI 界面 |
+| 外部图片导入识别 | UI 界面 |
 | :---: | :---: |
 | <img src="assets\external.png" alt="external" width="100%"> | <img src="assets\GUI.png"  alt="GUI" width="100%"> |
 | *自动裁边、腐蚀加固墙壁并完成鼠标交互选点* | *基于 MVC 架构与多线程无阻塞渲染* |
